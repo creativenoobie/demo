@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 import { User } from './users/entity/user.entity';
 import { UsersModule } from './users/users.module';
@@ -47,6 +48,17 @@ import { UsersModule } from './users/users.module';
       synchronize: true,
       logging: true,
     }),
+    RedisModule.forRoot(
+      {
+        config: {
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD ?? undefined,
+          keyPrefix: 'nm_',
+        },
+      },
+      true
+    ),
     UsersModule,
   ],
   controllers: [],
