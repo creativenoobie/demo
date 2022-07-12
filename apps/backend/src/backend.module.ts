@@ -18,14 +18,14 @@ import { Reply, Thought } from './thoughts/entity';
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .default('development'),
-        PORT: Joi.number().empty('').default(3000),
+        PORT: Joi.number().port().empty('').default(3000),
         DATABASE_URL: Joi.alternatives([
           Joi.string().ip({ cidr: 'forbidden' }),
           Joi.string().hostname(),
         ])
           .empty('')
           .default('localhost'),
-        DATABASE_PORT: Joi.number().empty('').default(3306),
+        DATABASE_PORT: Joi.number().port().empty('').default(3306),
         DATABASE_USER: Joi.string().required(),
         DATABASE_PASS: Joi.string().required(),
         DATABASE_NAME: Joi.string().required(),
@@ -36,7 +36,7 @@ import { Reply, Thought } from './thoughts/entity';
         ])
           .empty('')
           .default('localhost'),
-        REDIS_PORT: Joi.number().empty('').default(6379),
+        REDIS_PORT: Joi.number().port().empty('').default(6379),
       }),
     }),
     TypeOrmModule.forRoot({
