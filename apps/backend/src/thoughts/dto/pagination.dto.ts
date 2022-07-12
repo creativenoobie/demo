@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetThoughtDto {
+export class PaginationDto {
   @ApiProperty()
   offset: number;
 
