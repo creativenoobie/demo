@@ -5,11 +5,12 @@ import { User } from './entity/user.entity';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
 import { AuthUserService } from './auth.user.service';
+import { LocalStrategy } from './guards/local.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [],
-  providers: [TokenService, UserService, AuthUserService],
+  providers: [LocalStrategy, TokenService, UserService, AuthUserService],
   exports: [UserService],
 })
 export class UsersModule {}

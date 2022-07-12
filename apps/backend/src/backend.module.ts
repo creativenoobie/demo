@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 
+import { UtilsModule } from '@app/utils';
 import { User } from './users/entity/user.entity';
 import { UsersModule } from './users/users.module';
 import { ThoughtsModule } from './thoughts/thoughts.module';
@@ -61,10 +62,9 @@ import { Reply, Thought } from './thoughts/entity';
       },
       true
     ),
+    UtilsModule,
     UsersModule,
     ThoughtsModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class BackendModule {}
