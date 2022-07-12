@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { UserService } from '../users/user.service';
 
-import { Thought } from './entity/thought.entity';
-import { CreateThoughtDto, GetThoughtDto } from './dto';
+import { Thought } from './entity';
+import { CreateThoughtDto, PaginationDto } from './dto';
 
 @Injectable()
 export class ThoughtsService {
@@ -29,7 +29,7 @@ export class ThoughtsService {
   }
 
   async findAll(
-    { latest, offset, limit }: GetThoughtDto = {
+    { latest, offset, limit }: PaginationDto = {
       latest: true,
       limit: 10,
       offset: 0,
@@ -80,7 +80,7 @@ export class ThoughtsService {
       latest,
       offset,
       limit,
-    }: GetThoughtDto & { anonymous: boolean } = {
+    }: PaginationDto & { anonymous: boolean } = {
       anonymous: false,
       latest: true,
       limit: 10,
