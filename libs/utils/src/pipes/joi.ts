@@ -16,7 +16,10 @@ export class JoiValidationPipe implements PipeTransform {
       return inputs;
     }
 
-    const rules = this.schema.extract(metadata.type);
+    let rules = this.schema.extract(metadata.type);
+
+    if (metadata.data) rules = rules.extract(metadata.data);
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { error, value } = rules.validate(inputs);
 
