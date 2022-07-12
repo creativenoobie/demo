@@ -8,6 +8,7 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { User } from './users/entity/user.entity';
 import { UsersModule } from './users/users.module';
 import { ThoughtsModule } from './thoughts/thoughts.module';
+import { Reply, Thought } from './thoughts/entity';
 
 @Module({
   imports: [
@@ -44,7 +45,7 @@ import { ThoughtsModule } from './thoughts/thoughts.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASS,
       database: process.env.DATABASE_NAME,
-      entities: [User],
+      entities: [User, Thought, Reply],
       entityPrefix: process.env.DATABASE_PREFIX,
       synchronize: true,
       logging: true,
