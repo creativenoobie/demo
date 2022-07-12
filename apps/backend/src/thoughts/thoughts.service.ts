@@ -35,15 +35,25 @@ export class ThoughtsService {
       offset: 0,
     }
   ) {
-    const [data, count] = await this.thoughtsRepo.findAndCount({
+    const data = await this.thoughtsRepo
+      .createQueryBuilder('thoughts')
+      .select(['thoughts', 'user.id', 'user.username'])
+      .where('thoughts.id > :id', { id: offset })
+      .innerJoin('thoughts.user', 'user')
+      .orderBy('thoughts.createdAt', latest ? 'DESC' : 'ASC')
+      .limit(limit)
+      .getMany();
+
+    if (!data) {
+      throw new NotFoundException({
+        message: 'Thoughts not found.',
+      });
+    }
+
+    const count = await this.thoughtsRepo.count({
       where: {
         id: MoreThan(offset),
       },
-      relations: ['user'],
-      order: {
-        createdAt: latest ? 'DESC' : 'ASC',
-      },
-      take: limit,
     });
 
     return {
@@ -53,21 +63,17 @@ export class ThoughtsService {
   }
 
   async findOne(id: number) {
-    const data = await this.thoughtsRepo.findOne({
-      where: {
-        id,
-      },
-      relations: ['user'],
-    });
+    const data = await this.thoughtsRepo
+      .createQueryBuilder('thoughts')
+      .select(['thoughts', 'user.id', 'user.username'])
+      .where('thoughts.id = :id', { id })
+      .innerJoin('thoughts.user', 'user')
+      .getOne();
 
     if (!data) {
       throw new NotFoundException({
         message: 'Thought not found.',
       });
-    }
-
-    if (data.isAnonymous) {
-      delete data.user;
     }
 
     return data;
@@ -89,16 +95,30 @@ export class ThoughtsService {
   ) {
     const user = await this.userService.findOne(userId);
 
-    const [data, count] = await this.thoughtsRepo.findAndCount({
+    const data = await this.thoughtsRepo
+      .createQueryBuilder('thoughts')
+      .select(['thoughts', 'user.id', 'user.username'])
+      .where('thoughts.id > :id', { id: offset })
+      .andWhere('thoughts.user = :userId', { userId: user.id })
+      .andWhere(!anonymous ? 'thoughts.isAnonymous = :anon' : '1 = 1', {
+        anon: anonymous,
+      })
+      .innerJoin('thoughts.user', 'user')
+      .orderBy('thoughts.createdAt', latest ? 'DESC' : 'ASC')
+      .limit(limit)
+      .getMany();
+
+    if (!data) {
+      throw new NotFoundException({
+        message: 'Thoughts not found.',
+      });
+    }
+
+    const count = await this.thoughtsRepo.count({
       where: {
         id: MoreThan(offset),
-        user,
-        isAnonymous: anonymous,
+        user: { id: user.id },
       },
-      order: {
-        createdAt: latest ? 'DESC' : 'ASC',
-      },
-      take: limit,
     });
 
     return { thoughts: data, count };
@@ -107,7 +127,7 @@ export class ThoughtsService {
   async remove(thoughtId: number) {
     const entity = await this.findOne(thoughtId);
 
-    const { affected } = await this.thoughtsRepo.delete(entity);
+    const { affected } = await this.thoughtsRepo.delete(entity.id);
 
     return { affected };
   }

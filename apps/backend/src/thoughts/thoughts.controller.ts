@@ -90,12 +90,23 @@ export class ThoughtsController {
         'You are not authorized to perform this action'
       );
     }
-    return this.thoughtService.findByUser(id, {
+    const { thoughts, count } = await this.thoughtService.findByUser(id, {
       anonymous: id === user,
       latest,
       offset,
       limit,
     });
+
+    return {
+      thoughts: thoughts.map((r) => {
+        const thought = r;
+        if (thought.isAnonymous && thought.user.id !== user) {
+          delete thought.user;
+        }
+        return thought;
+      }),
+      count,
+    };
   }
 
   @Delete(':id')
