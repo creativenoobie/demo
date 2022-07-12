@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UtilsService } from './utils.service';
+import { BearerStrategy } from './strategy/bearer.strategy';
 
 @Module({
-  providers: [UtilsService],
-  exports: [UtilsService],
+  providers: [BearerStrategy],
+  exports: [BearerStrategy],
 })
 export class UtilsModule {}
