@@ -7,6 +7,7 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 import { User } from './users/entity/user.entity';
 import { UsersModule } from './users/users.module';
+import { ThoughtsModule } from './thoughts/thoughts.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { UsersModule } from './users/users.module';
       true
     ),
     UsersModule,
+    ThoughtsModule,
   ],
   controllers: [],
   providers: [],
