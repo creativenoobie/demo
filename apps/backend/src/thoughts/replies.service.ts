@@ -82,8 +82,21 @@ export class RepliesService {
     return data;
   }
 
-  async remove(replyId: number) {
-    const entity = await this.findOne(replyId);
+  async remove(thoughtId: number, replyId: number) {
+    const thought = await this.thoughtService.findOne(thoughtId);
+
+    if (!thought) {
+      throw new NotFoundException({
+        message: 'Thought not found.',
+      });
+    }
+
+    const entity = await this.repliesRepo.findOne({
+      where: {
+        id: replyId,
+        thought,
+      },
+    });
 
     const { affected } = await this.repliesRepo.delete(entity);
 
