@@ -1,2 +1,32 @@
 [
+  {
+    "action": "create",
+    "subject": "thoughts"
+  },
+  {
+    "action": "read",
+    "subject": "thoughts"
+  },
+  {
+    "action": "delete",
+    "subject": "thoughts",
+    "conditions": {
+      "user.id": "${user.id}"
+    }
+  },
+  {
+    "action": "create",
+    "subject": "replies"
+  },
+  {
+    "action": "read",
+    "subject": "replies"
+  },
+  {
+    "action": "delete",
+    "subject": "replies",
+    "conditions": {
+      "user.id": "${user.id}"
+    }
+  }
 ]

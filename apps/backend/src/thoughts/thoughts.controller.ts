@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -9,8 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { AuthValidate, User } from '@app/utils';
+import { AuthValidate } from '@app/utils';
+import { AppAbility, User } from '@app/acl';
 
+import { subject } from '@casl/ability';
 import { CreateThoughtDto, PaginationDto } from './dto';
 import { ThoughtsService } from './thoughts.service';
 import {
@@ -29,18 +32,32 @@ export class ThoughtsController {
   @Post()
   @AuthValidate(createThoughtSchema)
   async create(
-    @User('id') user: number,
-    @Body() createThoughtDto: CreateThoughtDto
+    @User('user.id') user: number,
+    @User('ability') ability: AppAbility,
+    @Body()
+    createThoughtDto: CreateThoughtDto
   ) {
+    if (!ability.can('create', 'thoughts')) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action'
+      );
+    }
     return this.thoughtService.create(user, createThoughtDto);
   }
 
   @Get()
   @AuthValidate(findAllThoughtsSchema)
   async findAll(
-    @User('id') userId: number,
+    @User('user.id') userId: number,
+    @User('ability') ability: AppAbility,
     @Query() { latest, offset, limit }: PaginationDto
   ) {
+    if (!ability.can('read', 'thoughts')) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action'
+      );
+    }
+
     const { thoughts, count } = await this.thoughtService.findAll({
       latest,
       offset,
@@ -62,11 +79,17 @@ export class ThoughtsController {
   @Get('user/:id')
   @AuthValidate(findByUserThoughtsSchema)
   async findByUser(
-    @User('id') user: number,
+    @User('user.id') user: number,
+    @User('ability') ability: AppAbility,
     @Param('id') id: number,
     @Query()
     { latest, offset, limit }: PaginationDto
   ) {
+    if (!ability.can('read', 'thoughts')) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action'
+      );
+    }
     return this.thoughtService.findByUser(id, {
       anonymous: id === user,
       latest,
@@ -77,7 +100,15 @@ export class ThoughtsController {
 
   @Delete(':id')
   @AuthValidate(deleteThoughtSchema)
-  async remove(@Param('id') id: number) {
+  async remove(@User('ability') ability: AppAbility, @Param('id') id: number) {
+    const thought = await this.thoughtService.findOne(id);
+
+    if (!ability.can('delete', subject('thoughts', thought))) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action'
+      );
+    }
+
     return this.thoughtService.remove(id);
   }
 }

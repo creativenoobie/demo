@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AclModule } from '@app/acl';
+
 import { User } from './entity/user.entity';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
@@ -9,7 +11,7 @@ import { LocalStrategy } from './guards/local.strategy';
 import { AuthUserController } from './auth.user.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), AclModule],
   controllers: [AuthUserController],
   providers: [LocalStrategy, TokenService, UserService, AuthUserService],
   exports: [UserService],

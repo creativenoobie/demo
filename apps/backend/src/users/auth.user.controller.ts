@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { BearerGuard, User, Validate } from '@app/utils';
+import { BearerGuard, Validate } from '@app/utils';
+import { User } from '@app/acl';
 
 import { CreateUserDto } from './dto';
 import { AuthUserService } from './auth.user.service';
@@ -30,7 +31,7 @@ export class AuthUserController {
 
   @UseGuards(BearerGuard)
   @Get('logout')
-  async logout(@User('token') token: string) {
+  async logout(@User('user.token') token: string) {
     return this.authService.logout(token);
   }
 
