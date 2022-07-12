@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: nm_assignment
+    volumes:
+      - ./mysqldb:/var/lib/mysql:rw
+    restart: always
+  redis:
+    image: redis:5.0
+    restart: always
+  web:
+    build: ./
+    environment:
+      DATABASE_NAME: nm_assignment
+      DATABASE_USER: root
+      DATABASE_PASS: rootpw
+      DATABASE_URL: 172.22.0.2
+      REDIS_HOST: redis
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    restart: on-failure
