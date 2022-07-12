@@ -7,8 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ProfileInterface } from '../interfaces/profile.interface';
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -24,9 +22,6 @@ export class User {
   @Index({ unique: true })
   @Column('varchar')
   email: string;
-
-  @Column('json')
-  profile: ProfileInterface;
 
   @Column({ default: true })
   isActive: boolean;
