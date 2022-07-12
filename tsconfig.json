@@ -17,12 +17,19 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "paths": {
       "@app/utils": [
         "libs/utils/src"
       ],
       "@app/utils/*": [
         "libs/utils/src/*"
+      ],
+      "@app/acl": [
+        "libs/acl/src"
+      ],
+      "@app/acl/*": [
+        "libs/acl/src/*"
       ]
     }
   }

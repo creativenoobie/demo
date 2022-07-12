@@ -104,7 +104,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1"
+      "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1",
+      "^@app/acl(|/.*)$": "<rootDir>/libs/acl/src/$1"
     }
   }
 }

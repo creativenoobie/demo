@@ -33,6 +33,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/utils/tsconfig.lib.json"
       }
+    },
+    "acl": {
+      "type": "library",
+      "root": "libs/acl",
+      "entryFile": "index",
+      "sourceRoot": "libs/acl/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/acl/tsconfig.lib.json"
+      }
     }
   }
 }
