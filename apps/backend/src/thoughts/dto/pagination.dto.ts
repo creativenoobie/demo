@@ -1,12 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationDto {
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   offset: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   limit: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+  })
   latest: boolean;
 }

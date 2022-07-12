@@ -23,6 +23,13 @@ export class RepliesService {
     createReplyDto: CreateReplyDto
   ) {
     const thought = await this.thoughtService.findOne(thoughtId);
+
+    if (!thought) {
+      throw new NotFoundException({
+        message: 'Thought not found.',
+      });
+    }
+
     const user = await this.userService.findOne(userId);
 
     const replyEntity = this.repliesRepo.create({
@@ -44,15 +51,35 @@ export class RepliesService {
       offset: 0,
     }
   ) {
-    const [data, count] = await this.repliesRepo.findAndCount({
+    const thought = await this.thoughtService.findOne(thoughtId);
+
+    if (!thought) {
+      throw new NotFoundException({
+        message: 'Thought not found.',
+      });
+    }
+
+    const data = await this.repliesRepo
+      .createQueryBuilder('replies')
+      .select(['replies', 'user.id', 'user.username'])
+      .where('replies.id > :id', { id: offset })
+      .andWhere('replies.thought = :thoughtId', { thoughtId: thought.id })
+      .innerJoin('replies.user', 'user')
+      .orderBy('replies.createdAt', latest ? 'DESC' : 'ASC')
+      .limit(limit)
+      .getMany();
+
+    if (!data) {
+      throw new NotFoundException({
+        message: 'Replies not found.',
+      });
+    }
+
+    const count = await this.repliesRepo.count({
       where: {
         id: MoreThan(offset),
+        thought: { id: thought.id },
       },
-      relations: ['user'],
-      order: {
-        createdAt: latest ? 'DESC' : 'ASC',
-      },
-      take: limit,
     });
 
     return {
@@ -62,21 +89,17 @@ export class RepliesService {
   }
 
   async findOne(id: number) {
-    const data = await this.repliesRepo.findOne({
-      where: {
-        id,
-      },
-      relations: ['user'],
-    });
+    const data = await this.repliesRepo
+      .createQueryBuilder('reply')
+      .select(['reply', 'user.id', 'user.username'])
+      .where('reply.id = :id', { id })
+      .innerJoin('reply.user', 'user')
+      .getOne();
 
     if (!data) {
       throw new NotFoundException({
         message: 'Reply not found.',
       });
-    }
-
-    if (data.isAnonymous) {
-      delete data.user;
     }
 
     return data;
@@ -94,11 +117,13 @@ export class RepliesService {
     const entity = await this.repliesRepo.findOne({
       where: {
         id: replyId,
-        thought,
+        thought: {
+          id: thought.id,
+        },
       },
     });
 
-    const { affected } = await this.repliesRepo.delete(entity);
+    const { affected } = await this.repliesRepo.delete(entity.id);
 
     return { affected };
   }
